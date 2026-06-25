@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import axios from 'axios'
+import API_BASE from '../api'
 
 function Weather() {
   const [weather, setWeather] = useState(null)
@@ -12,8 +13,8 @@ function Weather() {
   const fetchData = async () => {
     try {
       const [weatherRes, cropsRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/weather'),
-        axios.get('http://localhost:5000/api/weather/crops')
+        axios.get(`${API_BASE}/api/weather`),
+        axios.get(`${API_BASE}/api/weather/crops`)
       ])
       setWeather(weatherRes.data)
       setCrops(cropsRes.data)

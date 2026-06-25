@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import axios from 'axios'
+import API_BASE from '../api'
 
 function Plots() {
   const [plots, setPlots] = useState([])
@@ -13,12 +14,12 @@ function Plots() {
   }, [])
 
   const fetchPlots = () => {
-    axios.get('http://localhost:5000/api/plots').then(res => setPlots(res.data))
+    axios.get(`${API_BASE}/api/plots`).then(res => setPlots(res.data))
   }
 
   const handleSubmit = async () => {
     try {
-      await axios.post('http://localhost:5000/api/plots', {
+      await axios.post(`${API_BASE}/api/plots`, {
         ...form,
         crops: form.crops.split(',').map(c => c.trim())
       })
@@ -31,7 +32,7 @@ function Plots() {
   }
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/api/plots/${id}`)
+    await axios.delete(`${API_BASE}/api/plots/${id}`)
     fetchPlots()
   }
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import axios from 'axios'
+import API_BASE from '../api'
 
 function Soil() {
   const [plots, setPlots] = useState([])
@@ -10,7 +11,7 @@ function Soil() {
 
   const fetchPlots = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/plots')
+      const res = await axios.get(`${API_BASE}/api/plots`)
       setPlots(res.data)
     } catch (err) {
       console.error(err)
@@ -21,7 +22,7 @@ function Soil() {
 
   const updateSoil = async (id, soilStatus) => {
     try {
-      await axios.put(`http://localhost:5000/api/plots/${id}`, {
+      await axios.put(`${API_BASE}/api/plots/${id}`, {
         soilStatus,
         lastWatered: soilStatus === 'moist' || soilStatus === 'wet' ? new Date() : undefined
       })

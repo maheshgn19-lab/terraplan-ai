@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import axios from 'axios'
+import API_BASE from '../api'
 
 function Resources() {
   const [resources, setResources] = useState([])
@@ -10,12 +11,12 @@ function Resources() {
   useEffect(() => { fetchResources() }, [])
 
   const fetchResources = () => {
-    axios.get('http://localhost:5000/api/resources').then(res => setResources(res.data))
+    axios.get(`${API_BASE}/api/resources`).then(res => setResources(res.data))
   }
 
   const handleSubmit = async () => {
     try {
-      await axios.post('http://localhost:5000/api/resources', {
+      await axios.post(`${API_BASE}/api/resources`, {
         ...form,
         totalQuantity: Number(form.totalQuantity),
         availableQuantity: Number(form.availableQuantity)
@@ -30,18 +31,18 @@ function Resources() {
 
   const handleBorrow = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/api/resources/${id}/borrow`, { name: 'User' })
+      await axios.put(`${API_BASE}/api/resources/${id}/borrow`, { name: 'User' })
       fetchResources()
     } catch (err) { alert('No resources available!') }
   }
 
   const handleReturn = async (id) => {
-    await axios.put(`http://localhost:5000/api/resources/${id}/return`, { name: 'User' })
+    await axios.put(`${API_BASE}/api/resources/${id}/return`, { name: 'User' })
     fetchResources()
   }
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/api/resources/${id}`)
+    await axios.delete(`${API_BASE}/api/resources/${id}`)
     fetchResources()
   }
 

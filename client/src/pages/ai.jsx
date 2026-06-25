@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Navbar from '../components/Navbar'
 import axios from 'axios'
+import API_BASE from '../api'
 
 function AI() {
   const [question, setQuestion] = useState('')
@@ -21,7 +22,7 @@ function AI() {
     setLoading(true)
     setResponse('')
     try {
-      const res = await axios.post('http://localhost:5000/api/ai/suggest', { question })
+      const res = await axios.post(`${API_BASE}/api/ai/suggest`, { question })
       setResponse(res.data.suggestion)
     } catch (err) {
       setResponse('Sorry, AI is unavailable right now. Please try again!')

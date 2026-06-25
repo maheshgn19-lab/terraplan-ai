@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import axios from 'axios'
+import API_BASE from '../api'
 
 function Calendar() {
   const [volunteers, setVolunteers] = useState([])
@@ -9,8 +10,8 @@ function Calendar() {
   const [currentMonth, setCurrentMonth] = useState(new Date())
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/volunteers').then(res => setVolunteers(res.data))
-    axios.get('http://localhost:5000/api/announcements').then(res => setAnnouncements(res.data))
+    axios.get(`${API_BASE}/api/volunteers`).then(res => setVolunteers(res.data))
+    axios.get(`${API_BASE}/api/announcements`).then(res => setAnnouncements(res.data))
   }, [])
 
   const getDaysInMonth = (date) => {

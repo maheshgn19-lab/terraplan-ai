@@ -1,18 +1,19 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Dashboard from './pages/Dashboard'
-import Plots from './pages/Plots'
-import Resources from './pages/Resources'
-import Volunteers from './pages/Volunteers'
-import Announcements from './pages/Announcements'
-import Calendar from './pages/Calendar'
-import Login from './pages/Login'
-import Register from './pages/Register'
+import Dashboard from './pages/dashboard'
+import Plots from './pages/plots'
+import Resources from './pages/resources'
+import Volunteers from './pages/volunteers'
+import Announcements from './pages/announcements'
+import Calendar from './pages/calendar'
+import Login from './pages/login'
+import Register from './pages/register'
 import './App.css'
-import Weather from './pages/Weather'
-import AI from './pages/AI'
-import Soil from './pages/Soil'
-import CropYield from './pages/CropYield'
-import WaterMap from './pages/WaterMap'
+import Weather from './pages/weather'
+import AI from './pages/ai'
+import Soil from './pages/soil'
+import CropYield from './pages/cropyield'
+import WaterMap from './pages/watermap'
+import Profile from './pages/profile'
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="/soil" element={<Soil />} />
         <Route path="/yield" element={<CropYield />} />
         <Route path="/water" element={<WaterMap />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </Router>
   )

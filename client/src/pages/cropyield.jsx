@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import axios from 'axios'
+import API_BASE from '../api'
 
 function CropYield() {
   const [yields, setYields] = useState([])
@@ -12,8 +13,8 @@ function CropYield() {
 
   const fetchData = async () => {
     const [yieldsRes, statsRes] = await Promise.all([
-      axios.get('http://localhost:5000/api/yields'),
-      axios.get('http://localhost:5000/api/yields/stats')
+      axios.get(`${API_BASE}/api/yields`),
+      axios.get(`${API_BASE}/api/yields/stats`)
     ])
     setYields(yieldsRes.data)
     setStats(statsRes.data)
@@ -21,7 +22,7 @@ function CropYield() {
 
   const handleSubmit = async () => {
     try {
-      await axios.post('http://localhost:5000/api/yields', {
+      await axios.post(`${API_BASE}/api/yields`, {
         ...form,
         expectedYield: Number(form.expectedYield),
         actualYield: Number(form.actualYield)
@@ -33,7 +34,7 @@ function CropYield() {
   }
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/api/yields/${id}`)
+    await axios.delete(`${API_BASE}/api/yields/${id}`)
     fetchData()
   }
 

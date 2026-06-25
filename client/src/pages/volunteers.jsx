@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import axios from 'axios'
+import API_BASE from '../api'
 
 function Volunteers() {
   const [volunteers, setVolunteers] = useState([])
@@ -10,12 +11,12 @@ function Volunteers() {
   useEffect(() => { fetchVolunteers() }, [])
 
   const fetchVolunteers = () => {
-    axios.get('http://localhost:5000/api/volunteers').then(res => setVolunteers(res.data))
+    axios.get(`${API_BASE}/api/volunteers`).then(res => setVolunteers(res.data))
   }
 
   const handleSubmit = async () => {
     try {
-      await axios.post('http://localhost:5000/api/volunteers', form)
+      await axios.post(`${API_BASE}/api/volunteers`, form)
       setMessage('Volunteer added! 🌿')
       setForm({ name: '', email: '', task: '', zone: '', date: '', time: '' })
       fetchVolunteers()
@@ -23,12 +24,12 @@ function Volunteers() {
   }
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/api/volunteers/${id}`)
+    await axios.delete(`${API_BASE}/api/volunteers/${id}`)
     fetchVolunteers()
   }
 
   const handleStatus = async (id, status) => {
-    await axios.put(`http://localhost:5000/api/volunteers/${id}`, { status })
+    await axios.put(`${API_BASE}/api/volunteers/${id}`, { status })
     fetchVolunteers()
   }
 

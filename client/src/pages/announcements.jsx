@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import axios from 'axios'
+import API_BASE from '../api'
 
 function Announcements() {
   const [announcements, setAnnouncements] = useState([])
@@ -10,12 +11,12 @@ function Announcements() {
   useEffect(() => { fetchAnnouncements() }, [])
 
   const fetchAnnouncements = () => {
-    axios.get('http://localhost:5000/api/announcements').then(res => setAnnouncements(res.data))
+    axios.get(`${API_BASE}/api/announcements`).then(res => setAnnouncements(res.data))
   }
 
   const handleSubmit = async () => {
     try {
-      await axios.post('http://localhost:5000/api/announcements', form)
+      await axios.post(`${API_BASE}/api/announcements`, form)
       setMessage('Announcement posted! 🌿')
       setForm({ title: '', body: '', type: 'update', author: '' })
       fetchAnnouncements()
@@ -23,12 +24,12 @@ function Announcements() {
   }
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/api/announcements/${id}`)
+    await axios.delete(`${API_BASE}/api/announcements/${id}`)
     fetchAnnouncements()
   }
 
   const handleRead = async (id) => {
-    await axios.put(`http://localhost:5000/api/announcements/${id}/read`)
+    await axios.put(`${API_BASE}/api/announcements/${id}/read`)
     fetchAnnouncements()
   }
 

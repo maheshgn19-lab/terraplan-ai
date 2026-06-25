@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
+import Navbar from '../components/Navbar'
+import API_BASE from '../api'
 
 function Dashboard() {
   const [plots, setPlots] = useState([])
@@ -13,11 +15,11 @@ function Dashboard() {
   const user = JSON.parse(localStorage.getItem('user') || '{"name":"Gardener"}')
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/plots').then(res => setPlots(res.data))
-    axios.get('http://localhost:5000/api/resources').then(res => setResources(res.data))
-    axios.get('http://localhost:5000/api/volunteers').then(res => setVolunteers(res.data))
-    axios.get('http://localhost:5000/api/announcements').then(res => setAnnouncements(res.data))
-    axios.get('http://localhost:5000/api/weather').then(res => setWeather(res.data))
+    axios.get(`${API_BASE}/api/plots`).then(res => setPlots(res.data))
+    axios.get(`${API_BASE}/api/resources`).then(res => setResources(res.data))
+    axios.get(`${API_BASE}/api/volunteers`).then(res => setVolunteers(res.data))
+    axios.get(`${API_BASE}/api/announcements`).then(res => setAnnouncements(res.data))
+    axios.get(`${API_BASE}/api/weather`).then(res => setWeather(res.data))
   }, [])
 
   const getPlotColor = (status) => {
@@ -29,8 +31,8 @@ function Dashboard() {
 
   const handleBorrow = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/api/resources/${id}/borrow`, { name: user.name })
-      const res = await axios.get('http://localhost:5000/api/resources')
+      await axios.put(`${API_BASE}/api/resources/${id}/borrow`, { name: user.name })
+      const res = await axios.get(`${API_BASE}/api/resources`)
       setResources(res.data)
     } catch { alert('No resources available!') }
   }
@@ -57,25 +59,8 @@ function Dashboard() {
 
   return (
     <div className="wrapper">
-      <header>
-        <div className="logo">
-          <div className="logo-icon">🌿</div>
-          <span className="logo-text">Terraplan AI</span>
-        </div>
-        <nav>
-          <Link to="/" className="active">Home</Link>
-          <Link to="/plots">Plots</Link>
-          <Link to="/resources">Resources</Link>
-          <Link to="/weather">Weather</Link>
-          <Link to="/ai">AI</Link>
-          <Link to="/soil">Soil</Link>
-          <Link to="/yield">Yield</Link>
-          <Link to="/water">Water</Link>
-          <Link to="/volunteers">Volunteers</Link>
-          <Link to="/calendar">Calendar</Link>
-          <Link to="/announcements">Community</Link>
-        </nav>
-      </header>
+      <Navbar />
+      {/* Forced HMR update */}
 
       {/* Hero with personalized welcome */}
       <section className="hero">
@@ -219,7 +204,7 @@ function Dashboard() {
       </div>
 
       {/* Main grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+      <div className="dash-main-grid">
 
         {/* Plot map */}
         <div className="card">
@@ -361,7 +346,7 @@ function Dashboard() {
       </div>
 
       {/* Volunteers + Season progress */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '32px' }}>
+      <div className="dash-bottom-grid">
 
         {/* Upcoming volunteers */}
         <div className="card">

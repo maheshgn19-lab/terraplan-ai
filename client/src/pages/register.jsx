@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import API_BASE from '../api'
 
 function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' })
@@ -13,7 +14,7 @@ function Register() {
       return
     }
     try {
-      const res = await axios.post('http://localhost:5000/api/users/register', {
+      const res = await axios.post(`${API_BASE}/api/users/register`, {
         name: form.name,
         email: form.email,
         password: form.password

@@ -55,4 +55,41 @@ router.get('/me', async (req, res) => {
   }
 });
 
+// Update profile (username, email, and/or password)
+router.put('/profile', async (req, res) => {
+  try {
+    const token = req.header('x-auth-token');
+    if (!token) return res.status(401).json({ message: 'No token' });
+    const decoded = jwt.verify(token, SECRET);
+
+    const { name, email, currentPassword, newPassword } = req.body;
+    const user = await User.findById(decoded.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    if (name) user.name = name;
+
+    if (email && email !== user.email) {
+      // Check email not already taken by another account
+      const existing = await User.findOne({ email });
+      if (existing) return res.status(400).json({ message: 'Email already in use by another account' });
+      user.email = email;
+    }
+
+    if (newPassword) {
+      if (!currentPassword) return res.status(400).json({ message: 'Current password is required' });
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) return res.status(400).json({ message: 'Current password is incorrect' });
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(newPassword, salt);
+    }
+
+    await user.save();
+
+    const newToken = jwt.sign({ id: user._id, name: user.name, role: user.role }, SECRET, { expiresIn: '7d' });
+    res.json({ token: newToken, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;

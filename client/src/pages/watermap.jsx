@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import axios from 'axios'
+import API_BASE from '../api'
 
 function WaterMap() {
   const [pumps, setPumps] = useState([])
@@ -15,8 +16,8 @@ function WaterMap() {
 
   const fetchData = async () => {
     const [pumpsRes, plotsRes] = await Promise.all([
-      axios.get('http://localhost:5000/api/waterpumps'),
-      axios.get('http://localhost:5000/api/plots')
+      axios.get(`${API_BASE}/api/waterpumps`),
+      axios.get(`${API_BASE}/api/plots`)
     ])
     setPumps(pumpsRes.data)
     setPlots(plotsRes.data)
@@ -24,7 +25,7 @@ function WaterMap() {
 
   const handleAddPump = async () => {
     try {
-      await axios.post('http://localhost:5000/api/waterpumps', {
+      await axios.post(`${API_BASE}/api/waterpumps`, {
         ...form,
         nearbyPlots: form.nearbyPlots.split(',').map(p => p.trim()).filter(Boolean)
       })
@@ -38,7 +39,7 @@ function WaterMap() {
   const handleUse = async (id) => {
     if (!usageInput) return
     try {
-      await axios.put(`http://localhost:5000/api/waterpumps/${id}/use`, { litres: Number(usageInput) })
+      await axios.put(`${API_BASE}/api/waterpumps/${id}/use`, { litres: Number(usageInput) })
       setUsageInput('')
       setSelectedPump(null)
       fetchData()
@@ -46,18 +47,18 @@ function WaterMap() {
   }
 
   const handleStatus = async (id, status) => {
-    await axios.put(`http://localhost:5000/api/waterpumps/${id}`, { status })
+    await axios.put(`${API_BASE}/api/waterpumps/${id}`, { status })
     fetchData()
   }
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/api/waterpumps/${id}`)
+    await axios.delete(`${API_BASE}/api/waterpumps/${id}`)
     setSelectedPump(null)
     fetchData()
   }
 
   const handleResetDaily = async () => {
-    await axios.post('http://localhost:5000/api/waterpumps/reset-daily')
+    await axios.post(`${API_BASE}/api/waterpumps/reset-daily`)
     fetchData()
   }
 
