@@ -1,2 +1,4 @@
-# Local Netlify folder
-.netlify
+echo ".env" > .gitignore
+echo "node_modules/" >> .gitignore
+echo "server/.env" >> .gitignore
+echo "client/.env" >> .gitignore
