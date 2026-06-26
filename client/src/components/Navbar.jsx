@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
+import logoImg from '../assets/logo.jpg'
 
 const NAV_LINKS = [
   { to: '/',             label: 'Home' },
@@ -55,7 +56,7 @@ function Navbar() {
     <header>
       {/* Logo */}
       <div className="logo">
-        <div className="logo-icon">🌿</div>
+        <img src={logoImg} alt="Logo" className="logo-icon" style={{ objectFit: 'cover', objectPosition: '50% 18%', background: 'transparent' }} />
         <span className="logo-text">Terraplan AI</span>
       </div>
 
