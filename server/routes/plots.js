@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Plot = require('../models/plot');
+const Plot = require('../models/Plot');
 
 // Get all plots
 router.get('/', async (req, res) => {

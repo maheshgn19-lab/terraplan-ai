@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const WaterPump = require('../models/WaterPump');
+const WaterPump = require('../models/Waterpump');
 
 // Get all pumps
 router.get('/', async (req, res) => {
