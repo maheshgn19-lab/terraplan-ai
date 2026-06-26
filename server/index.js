@@ -19,6 +19,7 @@ const weatherRoutes = require('./routes/weather');
 const aiRoutes = require('./routes/ai');
 const yieldRoutes = require('./routes/yields');
 const waterPumpRoutes = require('./routes/waterpumps');
+const eventRoutes = require('./routes/events');
 
 app.use('/api/plots', plotRoutes);
 app.use('/api/resources', resourceRoutes);
@@ -29,6 +30,7 @@ app.use('/api/weather', weatherRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/yields', yieldRoutes);
 app.use('/api/waterpumps', waterPumpRoutes);
+app.use('/api/events', eventRoutes);
 
 // Home route
 app.get('/', (req, res) => {
