@@ -101,6 +101,11 @@ function Calendar() {
                         transition: 'all 0.2s'
                       }}>
                       {day}
+                      {dayEvts.find(e => e.eventType === 'holiday') && (
+                        <div style={{ fontSize: '9px', color: '#f87171', marginTop: '2px', textAlign: 'center', lineHeight: '1.1', maxWidth: '90%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {dayEvts.find(e => e.eventType === 'holiday').title}
+                        </div>
+                      )}
                       {dayEvts.length > 0 && (
                         <div style={{ display: 'flex', gap: '3px', position: 'absolute', bottom: '6px' }}>
                           {dayEvts.some(e => e.eventType === 'volunteer') && <div style={{ width: '5px', height: '5px', background: 'var(--green)', borderRadius: '50%' }} />}
