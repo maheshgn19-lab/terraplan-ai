@@ -88,6 +88,7 @@ function Calendar() {
                 {Array(daysInMonth).fill(null).map((_, i) => {
                   const day = i + 1
                   const dayEvts = getEventsForDay(day)
+                  const isSunday = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day).getDay() === 0
                   return (
                     <div key={day} onClick={() => setSelectedDay(day)}
                       style={{
@@ -95,7 +96,7 @@ function Calendar() {
                         alignItems: 'center', justifyContent: 'center', fontSize: '13px', cursor: 'pointer',
                         position: 'relative',
                         background: isToday(day) ? 'rgba(74,222,128,0.2)' : selectedDay === day ? 'rgba(74,222,128,0.1)' : 'transparent',
-                        color: isToday(day) ? 'var(--green)' : 'var(--text2)',
+                        color: isSunday ? '#f87171' : isToday(day) ? 'var(--green)' : 'var(--text2)',
                         fontWeight: isToday(day) ? '500' : '300',
                         border: selectedDay === day ? '1px solid rgba(74,222,128,0.4)' : '1px solid transparent',
                         transition: 'all 0.2s'

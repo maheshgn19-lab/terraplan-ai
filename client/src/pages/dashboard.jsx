@@ -402,7 +402,7 @@ function Dashboard() {
       </div>
 
       <footer>
-        Built with 🌿 for the community · <span>Terraplan AI v1.0</span> · Hackathon 2026
+        Built with 🌿 for the community · <span>Terraplan AI v1.0</span> · TerraTech LTD
       </footer>
     </div>
   )
