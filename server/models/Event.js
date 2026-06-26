@@ -18,7 +18,7 @@ const eventSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    default: 'regional'
+    default: 'religious'
   }
 }, { timestamps: true });
 

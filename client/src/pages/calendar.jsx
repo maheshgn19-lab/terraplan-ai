@@ -10,7 +10,7 @@ function Calendar() {
   const [selectedDay, setSelectedDay] = useState(null)
   const [currentMonth, setCurrentMonth] = useState(new Date())
 
-  // Form for regional events
+  // Form for religious events
   const [form, setForm] = useState({ title: '', date: '', region: 'Local', description: '' })
   const [message, setMessage] = useState('')
 
@@ -105,7 +105,7 @@ function Calendar() {
                         <div style={{ display: 'flex', gap: '3px', position: 'absolute', bottom: '6px' }}>
                           {dayEvts.some(e => e.eventType === 'volunteer') && <div style={{ width: '5px', height: '5px', background: 'var(--green)', borderRadius: '50%' }} />}
                           {dayEvts.some(e => e.eventType === 'holiday') && <div style={{ width: '5px', height: '5px', background: '#f87171', borderRadius: '50%' }} />}
-                          {dayEvts.some(e => e.eventType === 'regional') && <div style={{ width: '5px', height: '5px', background: '#60a5fa', borderRadius: '50%' }} />}
+                          {dayEvts.some(e => e.eventType === 'religious') && <div style={{ width: '5px', height: '5px', background: '#60a5fa', borderRadius: '50%' }} />}
                         </div>
                       )}
                     </div>
@@ -115,13 +115,13 @@ function Calendar() {
               <div style={{ display: 'flex', gap: '16px', marginTop: '16px', padding: '12px', background: 'var(--bg3)', borderRadius: '8px', fontSize: '12px', color: 'var(--text2)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '8px', height: '8px', background: 'var(--green)', borderRadius: '50%' }}/> Volunteer</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '8px', height: '8px', background: '#f87171', borderRadius: '50%' }}/> Holiday</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '8px', height: '8px', background: '#60a5fa', borderRadius: '50%' }}/> Regional</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '8px', height: '8px', background: '#60a5fa', borderRadius: '50%' }}/> Religious</div>
               </div>
             </div>
 
             {/* Add Event Form */}
             <div className="card">
-              <div className="card-header"><div className="card-title" style={{ fontSize: '16px' }}>Add Regional Event</div></div>
+              <div className="card-header"><div className="card-title" style={{ fontSize: '16px' }}>Add Religious Event</div></div>
               {message && <p style={{ color: message.includes('Error') ? '#f87171' : 'var(--green)', marginBottom: '12px', fontSize: '13px' }}>{message}</p>}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div className="form-group"><label>Event Title</label><input value={form.title} onChange={e => setForm({...form, title: e.target.value})} placeholder="e.g. Harvest Festival" /></div>
@@ -172,7 +172,7 @@ function Calendar() {
                               {v.eventType}
                             </div>
                           </div>
-                          <div style={{ fontSize: '12px', color: 'var(--text2)' }}>{v.description || 'Regional event'}</div>
+                          <div style={{ fontSize: '12px', color: 'var(--text2)' }}>{v.description || 'Religious event'}</div>
                         </div>
                       )
                     }
