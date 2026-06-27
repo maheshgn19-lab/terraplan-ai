@@ -5,8 +5,33 @@ const Plot = require('../models/Plot');
 // Get all plots
 router.get('/', async (req, res) => {
   try {
-    const plots = await Plot.find();
+    const plots = await Plot.find().sort({ plotNumber: 1 });
     res.json(plots);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Seed up to 50 plots — only inserts missing ones (safe, no duplicates)
+router.post('/seed', async (req, res) => {
+  try {
+    const existing = await Plot.find({}, 'plotNumber');
+    const existingNums = new Set(existing.map(p => p.plotNumber));
+
+    const zones = ['A', 'B', 'C', 'D', 'E'];
+    const toInsert = [];
+    for (const zone of zones) {
+      for (let n = 1; n <= 10; n++) {
+        const num = `${zone}${n}`;
+        if (!existingNums.has(num)) {
+          toInsert.push({ plotNumber: num, zone: `Zone ${zone}`, status: 'free' });
+        }
+      }
+    }
+
+    if (toInsert.length > 0) await Plot.insertMany(toInsert);
+    const total = await Plot.countDocuments();
+    res.json({ message: `Seeded ${toInsert.length} new plots`, total });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

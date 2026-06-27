@@ -14,6 +14,7 @@ import Soil from './pages/soil'
 import CropYield from './pages/cropyield'
 import WaterMap from './pages/watermap'
 import Profile from './pages/profile'
+import HydroponicFarming from './pages/hydroponic'
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/plots" element={<Plots />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/volunteers" element={<Volunteers />} />
+        <Route path="/hydroponic" element={<HydroponicFarming />} />
         <Route path="/announcements" element={<Announcements />} />
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/login" element={<Login />} />

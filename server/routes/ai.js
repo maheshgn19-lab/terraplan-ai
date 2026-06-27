@@ -14,24 +14,26 @@ router.post('/suggest', async (req, res) => {
     const weather = weatherRes.data;
     const month = new Date().getMonth() + 1;
 
-    const prompt = `You are an expert agricultural advisor for Chennai, Tamil Nadu, India.
+    const userQuestion = req.body.question?.trim() || 'What should I plant in my community garden right now?';
 
-Current conditions:
+    const prompt = `You are an expert agricultural advisor specializing in Chennai, Tamil Nadu, India.
+
+Current real-time conditions in Chennai:
 - Temperature: ${Math.round(weather.main.temp)}°C
 - Humidity: ${weather.main.humidity}%
 - Weather: ${weather.weather[0].description}
-- Month: ${month}
+- Month: ${month} (${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][month-1]})
 
-User question: ${req.body.question || 'What should I plant in my community garden right now?'}
+The user has asked: "${userQuestion}"
 
-Please provide:
-1. Top 3 crop recommendations for current conditions
-2. Soil preparation tips
-3. Watering schedule
-4. Common pests to watch out for
-5. One fun gardening tip
-
-Keep response friendly, practical and specific to Chennai climate. Use emojis. Keep it concise.`;
+Instructions:
+- Answer ONLY what the user has asked. Do NOT give a generic template response.
+- Tailor your answer specifically to the question — if they ask about pests, focus on pests; if they ask about watering, focus on watering; if they ask about a specific crop, focus on that crop.
+- Use the current Chennai weather and month as relevant context to make your answer accurate and timely.
+- Provide a moderately detailed answer: cover the key points thoroughly but stay focused and practical.
+- Use emojis where helpful to make the answer readable.
+- Do NOT repeat the same 5-section template (crops/soil/watering/pests/tip) for every question. Only include those sections if they are directly relevant to what was asked.
+- Write in a friendly, conversational tone suited for a community gardener in Chennai.`;
 
     const completion = await groq.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],

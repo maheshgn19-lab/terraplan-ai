@@ -2,7 +2,19 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import Navbar from '../components/Navbar'
+import ParticleBackground from '../components/ParticleBackground'
 import API_BASE from '../api'
+
+// Fixed 50-plot grid — always rendered even if DB is empty
+const GRID_PLOTS = ['A','B','C','D','E'].flatMap(zone =>
+  Array.from({ length: 10 }, (_, i) => ({
+    plotNumber: `${zone}${i + 1}`,
+    zone: `Zone ${zone}`,
+    status: 'free',
+    _id: null,
+    occupant: null,
+  }))
+)
 
 function Dashboard() {
   const [plots, setPlots] = useState([])
@@ -10,6 +22,7 @@ function Dashboard() {
   const [volunteers, setVolunteers] = useState([])
   const [announcements, setAnnouncements] = useState([])
   const [weather, setWeather] = useState(null)
+  const [hydroPlots, setHydroPlots] = useState([])
   const [selectedDay, setSelectedDay] = useState(new Date().getDate())
 
   const user = JSON.parse(localStorage.getItem('user') || '{"name":"Gardener"}')
@@ -20,6 +33,7 @@ function Dashboard() {
     axios.get(`${API_BASE}/api/volunteers`).then(res => setVolunteers(res.data))
     axios.get(`${API_BASE}/api/announcements`).then(res => setAnnouncements(res.data))
     axios.get(`${API_BASE}/api/weather`).then(res => setWeather(res.data))
+    axios.get(`${API_BASE}/api/hydroponics`).then(res => setHydroPlots(res.data)).catch(() => {})
   }, [])
 
   const getPlotColor = (status) => {
@@ -37,9 +51,30 @@ function Dashboard() {
     } catch { alert('No resources available!') }
   }
 
-  const freePlots = plots.filter(p => p.status === 'free').length
-  const takenPlots = plots.filter(p => p.status === 'taken' || p.status === 'mine').length
-  const reservedPlots = plots.filter(p => p.status === 'reserved').length
+  // Merge DB plots with the fixed 50-plot grid
+  const mergedPlots = GRID_PLOTS.map(slot => {
+    const db = plots.find(p => p.plotNumber === slot.plotNumber)
+    return db
+      ? { ...slot, status: db.status, occupant: db.occupant, _id: db._id }
+      : slot
+  })
+
+  const freePlots = mergedPlots.filter(p => p.status === 'free').length
+  const takenPlots = mergedPlots.filter(p => p.status === 'taken' || p.status === 'mine').length
+  const reservedPlots = mergedPlots.filter(p => p.status === 'reserved').length
+
+  // Resource stats: borrowed = totalQuantity - availableQuantity across all items
+  const totalResourceItems = resources.reduce((sum, r) => sum + r.totalQuantity, 0)
+  const availableResourceItems = resources.reduce((sum, r) => sum + r.availableQuantity, 0)
+  const borrowedResourceItems = totalResourceItems - availableResourceItems
+
+  // Volunteers joined in last 2 days
+  const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+  const recentVolunteers = volunteers.filter(v => new Date(v.createdAt) >= twoDaysAgo).length
+
+  // Announcement read/unread
+  const unreadCount = announcements.filter(a => !a.isRead).length
+  const readCount = announcements.filter(a => a.isRead).length
 
   // Calendar
   const today = new Date()
@@ -50,7 +85,7 @@ function Dashboard() {
 
   // Season progress
   const occupiedPct = plots.length ? Math.round((takenPlots / plots.length) * 100) : 0
-  const borrowedPct = resources.length ? Math.round((resources.filter(r => r.availableQuantity < r.totalQuantity).length / resources.length) * 100) : 0
+  const borrowedPct = totalResourceItems > 0 ? Math.round((borrowedResourceItems / totalResourceItems) * 100) : 0
   const confirmedPct = volunteers.length ? Math.round((volunteers.filter(v => v.status === 'confirmed').length / volunteers.length) * 100) : 0
 
   const avatarColors = ['rgba(74,222,128,0.2)', 'rgba(167,139,250,0.2)', 'rgba(251,191,36,0.2)', 'rgba(96,165,250,0.2)']
@@ -59,6 +94,7 @@ function Dashboard() {
 
   return (
     <div className="wrapper">
+      <ParticleBackground />
       <Navbar />
       {/* Forced HMR update */}
 
@@ -179,75 +215,76 @@ function Dashboard() {
       <div className="stats-row">
         <div className="stat-card">
           <span className="stat-icon">🗺️</span>
-          <div className="stat-num">{plots.length}</div>
+          <div className="stat-num">{mergedPlots.length}</div>
           <div className="stat-label">Total plots</div>
           <div className="stat-change">↑ {freePlots} free plots available</div>
         </div>
         <div className="stat-card">
           <span className="stat-icon">🔧</span>
-          <div className="stat-num">{resources.length}</div>
-          <div className="stat-label">Resources available</div>
-          <div className="stat-change">↑ {resources.filter(r => r.availableQuantity > 0).length} ready to borrow</div>
+          <div className="stat-num">{totalResourceItems}</div>
+          <div className="stat-label">Total resources</div>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '6px' }}>
+            <span style={{ fontSize: '11px', color: '#f87171', background: 'rgba(239,68,68,0.12)', padding: '2px 8px', borderRadius: '999px' }}>📤 {borrowedResourceItems} borrowed</span>
+            <span style={{ fontSize: '11px', color: 'var(--green)', background: 'rgba(74,222,128,0.12)', padding: '2px 8px', borderRadius: '999px' }}>✅ {availableResourceItems} available</span>
+          </div>
         </div>
         <div className="stat-card">
           <span className="stat-icon">👥</span>
           <div className="stat-num">{volunteers.length}</div>
           <div className="stat-label">Active volunteers</div>
-          <div className="stat-change">↑ {volunteers.filter(v => v.status === 'confirmed').length} confirmed</div>
+          <div className="stat-change">🆕 {recentVolunteers} joined in last 2 days</div>
         </div>
         <div className="stat-card">
           <span className="stat-icon">📣</span>
           <div className="stat-num">{announcements.length}</div>
           <div className="stat-label">Announcements</div>
-          <div className="stat-change">↑ {announcements.filter(a => !a.isRead).length} unread</div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '6px' }}>
+            <span style={{ fontSize: '11px', color: '#f87171', background: 'rgba(239,68,68,0.12)', padding: '2px 8px', borderRadius: '999px' }}>🔴 {unreadCount} unread</span>
+            <span style={{ fontSize: '11px', color: 'var(--green)', background: 'rgba(74,222,128,0.12)', padding: '2px 8px', borderRadius: '999px' }}>✅ {readCount} read</span>
+          </div>
         </div>
       </div>
 
       {/* Main grid */}
       <div className="dash-main-grid">
 
-        {/* Plot map */}
+        {/* Plot map — always 50 plots */}
         <div className="card">
           <div className="card-header">
             <div className="card-title"><span className="card-title-icon">🗺️</span> Plot map</div>
             <Link to="/plots" className="card-link">Manage →</Link>
           </div>
-          {plots.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '30px' }}>
-              <p style={{ color: 'var(--text2)', fontSize: '13px' }}>No plots yet!</p>
-              <Link to="/plots">
-                <button className="btn-primary" style={{ marginTop: '12px', fontSize: '12px', padding: '8px 16px' }}>Add Plots</button>
-              </Link>
-            </div>
-          ) : (
-            <>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: '4px', marginBottom: '10px' }}>
-                {plots.map(plot => {
-                  const colors = getPlotColor(plot.status)
-                  return (
-                    <Link to="/plots" key={plot._id}>
-                      <div
-                        title={`Plot ${plot.plotNumber} — ${plot.status}${plot.occupant ? ` (${plot.occupant})` : ''}`}
-                        style={{ aspectRatio: '1', borderRadius: '4px', cursor: 'pointer', border: `1px solid ${colors.border}`, background: colors.bg }}
-                      />
-                    </Link>
-                  )
-                })}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(10, 1fr)', gap: '4px', marginBottom: '10px' }}>
+            {mergedPlots.map((plot, i) => {
+              const colors = getPlotColor(plot.status)
+              return (
+                <Link to="/plots" key={plot._id || plot.plotNumber + i}>
+                  <div
+                    title={`Plot ${plot.plotNumber} — ${plot.status}${plot.occupant ? ` (${plot.occupant})` : ''}`}
+                    style={{
+                      aspectRatio: '1', borderRadius: '4px', cursor: 'pointer',
+                      border: `1px solid ${colors.border}`, background: colors.bg,
+                      transition: 'transform 0.12s',
+                    }}
+                    onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.15)' }}
+                    onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)' }}
+                  />
+                </Link>
+              )
+            })}
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+            {[
+              { label: `Free (${freePlots})`,     bg: 'rgba(74,222,128,0.12)', border: 'rgba(74,222,128,0.3)'  },
+              { label: `Reserved (${reservedPlots})`, bg: 'rgba(251,191,36,0.2)', border: 'rgba(251,191,36,0.3)' },
+              { label: `Taken (${takenPlots})`,   bg: 'rgba(139,92,46,0.25)', border: 'rgba(180,120,60,0.2)'  },
+            ].map((l, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', color: 'var(--text2)' }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: l.bg, border: `1px solid ${l.border}` }} />
+                {l.label}
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                {[
-                  { label: `Free (${freePlots})`, bg: 'rgba(74,222,128,0.12)', border: 'rgba(74,222,128,0.3)' },
-                  { label: `Taken (${takenPlots})`, bg: 'rgba(139,92,46,0.25)', border: 'rgba(180,120,60,0.2)' },
-                  { label: `Reserved (${reservedPlots})`, bg: 'rgba(251,191,36,0.2)', border: 'rgba(251,191,36,0.3)' },
-                ].map((l, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', color: 'var(--text2)' }}>
-                    <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: l.bg, border: `1px solid ${l.border}` }} />
-                    {l.label}
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
+            ))}
+          </div>
         </div>
 
         {/* Announcements */}
@@ -261,9 +298,18 @@ function Dashboard() {
               <p style={{ color: 'var(--text2)', fontSize: '13px' }}>No announcements yet.</p>
             ) : (
               announcements.slice(0, 3).map(a => (
-                <div key={a._id} className={`announce-item ${a.type}`}>
-                  <div className="announce-meta">
+                <div key={a._id} className={`announce-item ${a.type}`} style={{ opacity: a.isRead ? 0.65 : 1, borderLeft: a.isRead ? '3px solid rgba(74,222,128,0.2)' : '3px solid rgba(248,113,113,0.6)' }}>
+                  <div className="announce-meta" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                     <span className={`announce-tag ${a.type === 'urgent' ? 'urgent-tag' : a.type === 'event' ? 'event-tag' : ''}`}>{a.type}</span>
+                    <span style={{
+                      fontSize: '10px',
+                      fontWeight: '600',
+                      padding: '2px 8px',
+                      borderRadius: '999px',
+                      letterSpacing: '0.05em',
+                      background: a.isRead ? 'rgba(74,222,128,0.12)' : 'rgba(239,68,68,0.15)',
+                      color: a.isRead ? 'var(--green)' : '#f87171',
+                    }}>{a.isRead ? '✓ READ' : '● UNREAD'}</span>
                     <span className="announce-date">{new Date(a.date).toLocaleDateString()}</span>
                   </div>
                   <div className="announce-title">{a.title}</div>
@@ -345,8 +391,8 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Volunteers + Season progress */}
-      <div className="dash-bottom-grid">
+      {/* Volunteers + Hydroponic + Season progress */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', marginBottom: '32px' }}>
 
         {/* Upcoming volunteers */}
         <div className="card">
@@ -371,6 +417,44 @@ function Dashboard() {
                 </div>
               ))
             )}
+          </div>
+        </div>
+
+        {/* Hydroponic Farming */}
+        <div className="card" style={{ borderColor: 'rgba(56,189,248,0.2)', background: 'linear-gradient(135deg, rgba(2,132,199,0.08), rgba(56,189,248,0.03))' }}>
+          <div className="card-header">
+            <div className="card-title" style={{ color: '#38bdf8' }}>
+              <span className="card-title-icon">🌊</span> Hydroponic Farm
+            </div>
+            <Link to="/hydroponic" className="card-link" style={{ color: '#38bdf8' }}>Manage →</Link>
+          </div>
+          {/* Mini stat row */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '14px' }}>
+            {[
+              { label: 'Total Plots', val: hydroPlots.length || 10, icon: '🌊' },
+              { label: 'Active', val: hydroPlots.filter(p => p.status === 'active').length, icon: '🟢' },
+              { label: 'Harvesting', val: hydroPlots.filter(p => p.status === 'harvesting').length, icon: '🌿' },
+            ].map((s, i) => (
+              <div key={i} style={{ background: 'rgba(56,189,248,0.08)', border: '1px solid rgba(56,189,248,0.15)', borderRadius: '10px', padding: '8px', textAlign: 'center' }}>
+                <div style={{ fontSize: '14px', marginBottom: '3px' }}>{s.icon}</div>
+                <div style={{ fontSize: '18px', fontWeight: '700', color: '#38bdf8', fontFamily: 'Playfair Display, serif', lineHeight: 1 }}>{s.val}</div>
+                <div style={{ fontSize: '9px', color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+          {/* Zone pills */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '12px' }}>
+            {['H1'].map(zone => {
+              const count = hydroPlots.filter(p => p.zone === `Zone ${zone}` && p.status === 'active').length
+              return (
+                <span key={zone} style={{ fontSize: '10px', padding: '3px 9px', borderRadius: '999px', background: count > 0 ? 'rgba(56,189,248,0.15)' : 'rgba(56,189,248,0.05)', color: count > 0 ? '#38bdf8' : 'var(--text2)', border: `1px solid ${count > 0 ? 'rgba(56,189,248,0.3)' : 'rgba(56,189,248,0.1)'}` }}>
+                  Zone {zone} {count > 0 ? `· ${count} active` : ''}
+                </span>
+              )
+            })}
+          </div>
+          <div style={{ fontSize: '11px', color: 'var(--text2)', lineHeight: 1.6 }}>
+            🌱 Soil-free growing · 💧 90% less water · ⚡ 3× faster yield
           </div>
         </div>
 

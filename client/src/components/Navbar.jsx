@@ -11,8 +11,9 @@ const NAV_LINKS = [
   { to: '/ai',           label: 'AI' },
   { to: '/soil',         label: 'Soil' },
   { to: '/yield',        label: 'Yield' },
-  { to: '/water',        label: 'Water' },
   { to: '/volunteers',   label: 'Volunteers' },
+  { to: '/hydroponic',   label: '🌊 Hydroponic' },
+  { to: '/water',        label: 'Water' },
   { to: '/calendar',     label: 'Calendar' },
   { to: '/announcements',label: 'Community' },
 ]

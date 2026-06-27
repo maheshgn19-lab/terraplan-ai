@@ -1227,3 +1227,410 @@ footer span { color: #22c55e; }
   .theme-option { width: 100%; flex-direction: row; padding: 10px 14px; }
   .theme-preview { width: 50px; height: 36px; }
 }
+
+/* ==========================================
+   HYDROPONIC FARMING — BLUE THEME
+   ========================================== */
+
+:root {
+  --hydro-blue: #38bdf8;
+  --hydro-blue2: #0ea5e9;
+  --hydro-blue3: #0284c7;
+  --hydro-glow: 0 0 20px rgba(56, 189, 248, 0.3);
+  --hydro-bg: rgba(56, 189, 248, 0.06);
+  --hydro-border: rgba(56, 189, 248, 0.2);
+}
+
+.hydro-hero {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.15), rgba(56, 189, 248, 0.06));
+  border: 1px solid var(--hydro-border);
+  border-radius: 20px;
+  padding: 32px;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hydro-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 80% 20%, rgba(56, 189, 248, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hydro-hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 38px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #38bdf8, #7dd3fc, #bae6fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.hydro-hero-sub {
+  color: var(--text2);
+  font-size: 14px;
+  line-height: 1.7;
+  max-width: 600px;
+  margin-bottom: 20px;
+}
+
+.hydro-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.hydro-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 12px;
+  color: var(--hydro-blue);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.hydro-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 900px) { .hydro-stats-row { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 500px) { .hydro-stats-row { grid-template-columns: 1fr 1fr; } }
+
+.hydro-stat-card {
+  background: var(--hydro-bg);
+  border: 1px solid var(--hydro-border);
+  border-radius: 16px;
+  padding: 18px 20px;
+  transition: box-shadow 0.3s, transform 0.2s;
+}
+
+.hydro-stat-card:hover {
+  box-shadow: var(--hydro-glow);
+  transform: translateY(-2px);
+}
+
+.hydro-stat-icon {
+  font-size: 22px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.hydro-stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--hydro-blue);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.hydro-stat-label {
+  font-size: 11px;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Grid of hydroponic plots */
+.hydro-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 700px) { .hydro-grid { grid-template-columns: repeat(6, 1fr); } }
+
+.hydro-plot-cell {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid rgba(56, 189, 248, 0.15);
+  background: rgba(56, 189, 248, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: rgba(56, 189, 248, 0.6);
+  transition: transform 0.15s, box-shadow 0.2s, border-color 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.hydro-plot-cell:hover {
+  transform: scale(1.18);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+  border-color: var(--hydro-blue);
+  z-index: 5;
+}
+
+.hydro-plot-cell.active {
+  background: rgba(56, 189, 248, 0.22);
+  border-color: var(--hydro-blue);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.35);
+}
+
+.hydro-plot-cell.maintenance {
+  background: rgba(251, 191, 36, 0.15);
+  border-color: rgba(251, 191, 36, 0.4);
+}
+
+.hydro-plot-cell.harvesting {
+  background: rgba(74, 222, 128, 0.2);
+  border-color: rgba(74, 222, 128, 0.45);
+}
+
+.hydro-plot-cell.idle {
+  background: rgba(56, 189, 248, 0.05);
+  border-color: rgba(56, 189, 248, 0.12);
+}
+
+/* Pulsing active indicator dot */
+.hydro-plot-cell.active::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 5px;
+  height: 5px;
+  background: var(--hydro-blue);
+  border-radius: 50%;
+  animation: hydroPulse 2s ease-in-out infinite;
+}
+
+@keyframes hydroPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.6); }
+}
+
+/* System type badge */
+.hydro-system-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--hydro-blue);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+/* Status badges */
+.hydro-status-active  { background: rgba(56,189,248,0.15); color: #38bdf8; border-color: rgba(56,189,248,0.3); }
+.hydro-status-idle    { background: rgba(148,163,184,0.12); color: #94a3b8; border-color: rgba(148,163,184,0.2); }
+.hydro-status-maintenance { background: rgba(251,191,36,0.15); color: #fbbf24; border-color: rgba(251,191,36,0.3); }
+.hydro-status-harvesting  { background: rgba(74,222,128,0.15); color: #4ade80; border-color: rgba(74,222,128,0.3); }
+
+/* Detail card for selected plot */
+.hydro-detail-card {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.1), rgba(56, 189, 248, 0.04));
+  border: 1px solid var(--hydro-border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 16px;
+  animation: hydroSlideIn 0.25s ease;
+}
+
+@keyframes hydroSlideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* pH / nutrient bars */
+.hydro-bar-track {
+  height: 6px;
+  background: rgba(56, 189, 248, 0.1);
+  border-radius: 999px;
+  margin-top: 5px;
+  overflow: hidden;
+}
+
+.hydro-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--hydro-blue3), var(--hydro-blue));
+  transition: width 0.5s ease;
+}
+
+.hydro-bar-fill.warn { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.hydro-bar-fill.danger { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+/* Form */
+.hydro-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 600px) { .hydro-form-grid { grid-template-columns: 1fr; } }
+
+/* Plot list item */
+.hydro-plot-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.08);
+  transition: background 0.2s;
+}
+
+.hydro-plot-item:last-child { border-bottom: none; }
+.hydro-plot-item:hover { background: rgba(56, 189, 248, 0.04); border-radius: 10px; padding-left: 8px; }
+
+.hydro-plot-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+/* Metrics mini-row */
+.hydro-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.hydro-metric-box {
+  background: rgba(56, 189, 248, 0.07);
+  border: 1px solid rgba(56, 189, 248, 0.15);
+  border-radius: 10px;
+  padding: 10px 12px;
+  text-align: center;
+}
+
+.hydro-metric-val {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--hydro-blue);
+  font-family: 'Playfair Display', serif;
+}
+
+.hydro-metric-lbl {
+  font-size: 9px;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+
+/* Info facts section */
+.hydro-facts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 900px) { .hydro-facts-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 500px) { .hydro-facts-grid { grid-template-columns: 1fr; } }
+
+.hydro-fact-card {
+  background: var(--hydro-bg);
+  border: 1px solid var(--hydro-border);
+  border-radius: 16px;
+  padding: 20px;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.hydro-fact-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(56, 189, 248, 0.15);
+}
+
+.hydro-fact-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.hydro-fact-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--hydro-blue);
+  margin-bottom: 6px;
+}
+
+.hydro-fact-body {
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+/* Blue accent for btn */
+.btn-hydro {
+  background: linear-gradient(135deg, var(--hydro-blue3), var(--hydro-blue));
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+  font-family: 'DM Sans', sans-serif;
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.25);
+}
+
+.btn-hydro:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.35);
+}
+
+/* Toggle lights button */
+.hydro-toggle-btn {
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  color: var(--hydro-blue);
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.hydro-toggle-btn:hover {
+  background: rgba(56, 189, 248, 0.2);
+}
+
+/* Dashboard hydro card */
+.hydro-dash-card {
+  background: linear-gradient(135deg, rgba(2,132,199,0.12), rgba(56,189,248,0.04));
+  border: 1px solid rgba(56,189,248,0.2);
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.hydro-zone-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--hydro-blue);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
